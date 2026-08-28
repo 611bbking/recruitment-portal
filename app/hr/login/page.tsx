@@ -1,0 +1,2 @@
+import HrLogin from '../../components/HrLogin';
+export default async function HrLoginPage({ searchParams }: { searchParams: Promise<{ returnTo?: string }> }) { const query = await searchParams; return <main className="hr-login-page"><section><div><p>RECRUITMENT OPERATIONS</p><h2>连接候选人、职位<br />与每一次招聘动作</h2><span>以 Application 为核心推进筛选、面试与人才项目协同。</span></div></section><section><HrLogin returnTo={query.returnTo ?? '/hr'} /></section></main>; }

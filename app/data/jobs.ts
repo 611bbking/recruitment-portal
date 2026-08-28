@@ -1,0 +1,92 @@
+import type { Job } from '../types/recruitment';
+
+const mockTimestamp = '2026-08-28T00:00:00+08:00';
+
+export const jobs: Job[] = [
+  {
+    job_id: 'researcher',
+    title: '研究员',
+    recruitment_type: '校园招聘',
+    job_category: '研究 / 业务研究',
+    department: '产业研究部门（Mock，待确认）',
+    business_unit: '大宗商品业务（Mock，待确认）',
+    location: '宁波（Mock，待确认）',
+    education_requirement: '本科及以上',
+    major_requirement: '专业不限，化工、数学、金融及复合专业背景优先。',
+    responsibilities: [
+      '对所负责的大宗商品板块产业链进行研究，了解其产业结构、供需平衡及市场动态；',
+      '独立撰写研究报告及策略建议，对所研究商品的供需及结构强弱趋势做出判断；',
+      '在扎实专业的产业研究基础上，经评估可开放交易权限；',
+      '上级交办的其他项目性事宜。',
+    ],
+    requirements: [
+      '本科及以上学历，专业不限，化工、数学、金融及复合专业背景优先，具有理工科思维；',
+      '对大宗商品研究及分析有强烈兴趣，具有较强的逻辑推理能力；',
+      '自我驱动力强，目标明确，喜欢挑战；',
+      '学习、认知能力强，讲究方法和效率；',
+      '善于整合公司内部及外部资源。',
+    ],
+    related_project_ids: ['summer-exploration', 'kunpeng-program'],
+    status: 'open',
+    created_at: mockTimestamp,
+    updated_at: mockTimestamp,
+    is_mock: true,
+  },
+  {
+    job_id: 'sales-representative',
+    title: '业务员',
+    recruitment_type: '校园招聘',
+    job_category: '业务',
+    department: '业务部门（Mock，待确认）',
+    business_unit: '大宗商品贸易（Mock，待确认）',
+    location: '宁波（Mock，待确认）',
+    education_requirement: '本科及以上',
+    major_requirement: '专业不限，国际贸易、金融、化工、数学等专业背景优先。',
+    responsibilities: [
+      '大宗商品原材料下游渠道开发与维护；',
+      '大宗商品原材料采购；',
+      '负责产品产业信息收集；',
+      '产品市场情况分析。',
+    ],
+    requirements: [
+      '本科及以上学历，专业不限，国际贸易、金融、化工、数学等专业背景优先；',
+      '吃苦耐劳，能适应频繁出差；',
+      '沟通能力、抗压能力强。',
+    ],
+    related_project_ids: ['summer-exploration'],
+    status: 'open',
+    created_at: mockTimestamp,
+    updated_at: mockTimestamp,
+    is_mock: true,
+  },
+  {
+    job_id: 'business-assistant',
+    title: '商务助理',
+    recruitment_type: '校园招聘',
+    job_category: '商务',
+    department: '商务支持部门（Mock，待确认）',
+    business_unit: '贸易运营（Mock，待确认）',
+    location: '宁波（Mock，待确认）',
+    education_requirement: '本科及以上',
+    major_requirement: '专业不限，国际贸易、化工、英语、经济类等专业背景优先。',
+    responsibilities: [
+      '负责业务板块进出口、内贸订单、货物交付等贸易各环节跟进与处理；',
+      '协助业务部门处理内外部协调及沟通工作；',
+      '完成其他相关工作。',
+    ],
+    requirements: [
+      '本科及以上学历，专业不限，国际贸易、化工、英语、经济类等专业背景优先；',
+      '工作认真仔细，条理清晰；',
+      '抗压能力和责任心强；',
+      '具有良好的团队合作能力；',
+      '大学英语六级及以上水平，英文听说读写熟练。',
+    ],
+    related_project_ids: ['kunpeng-program'],
+    status: 'open',
+    created_at: mockTimestamp,
+    updated_at: mockTimestamp,
+    is_mock: true,
+  },
+];
+
+export const getJobById = (jobId: string) => jobs.find((job) => job.job_id === jobId);

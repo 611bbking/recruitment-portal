@@ -1,0 +1,26 @@
+'use client';
+
+import Link from 'next/link';
+import { FormEvent, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { jobs } from '../data/jobs';
+import { recruitmentProjects } from '../data/projects';
+import { getMockApplications, getMockCandidate, isMockAuthenticated, mockLogout, publicStatusLabels, updateMockCandidate } from '../lib/mock-store';
+import type { Application, Candidate, ParsedResumeData } from '../types/recruitment';
+
+export default function CandidateDashboard({ section }: { section: 'applications' | 'profile' | 'account' }) {
+  const router = useRouter(); const [candidate, setCandidate] = useState<Candidate | null>(null); const [applications, setApplications] = useState<Application[]>([]); const [ready, setReady] = useState(false); const [saved, setSaved] = useState(false);
+  useEffect(() => { const timer = window.setTimeout(() => { if (!isMockAuthenticated()) { router.replace(`/auth?returnTo=/candidate/${section}`); return; } setCandidate(getMockCandidate()); setApplications(getMockApplications()); setReady(true); }, 0); return () => window.clearTimeout(timer); }, [router, section]);
+  if (!ready || !candidate) return <div className="dashboard-loading">正在读取候选人 Mock 状态…</div>;
+
+  function saveProfile(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); const form = new FormData(event.currentTarget); const data: ParsedResumeData = { name: String(form.get('name')), phone: String(form.get('phone')), email: String(form.get('email')), gender: String(form.get('gender')), birth_date: String(form.get('birth_date')), school: String(form.get('school')), degree: String(form.get('degree')), major: String(form.get('major')), graduation_date: String(form.get('graduation_date')), preferred_city: String(form.get('preferred_city')) };
+    setCandidate(updateMockCandidate(data)); setSaved(true);
+  }
+
+  return <div className="candidate-layout"><aside><div className="candidate-avatar">{candidate.name.slice(0, 1)}</div><strong>{candidate.name}</strong><span>候选人 ID：{candidate.candidate_id}</span><nav><Link className={section === 'applications' ? 'active' : ''} href="/candidate/applications">我的投递</Link><Link className={section === 'profile' ? 'active' : ''} href="/candidate/profile">个人资料</Link><Link className={section === 'account' ? 'active' : ''} href="/candidate/account">账号设置</Link></nav></aside><section className="candidate-content">
+    {section === 'applications' && <><div className="dashboard-title"><p>APPLICATIONS</p><h1>我的投递</h1></div>{applications.length ? <div className="application-list">{applications.map((application) => { const job = jobs.find((item) => item.job_id === application.job_id); const project = recruitmentProjects.find((item) => item.project_id === application.project_id); return <article key={application.application_id}><div><small>{job?.recruitment_type}</small><h2>{job?.title ?? application.job_id}</h2><p>{job?.location}{project ? ` · ${project.project_name}` : ''}</p></div><div><span className={`application-status status-${application.status}`}>{publicStatusLabels[application.status]}</span><time>{new Date(application.applied_at).toLocaleString('zh-CN')}</time></div></article>; })}</div> : <div className="empty-dashboard"><strong>还没有投递记录</strong><p>选择一个职位，开启你的申请。</p><Link className="button button-primary" href="/jobs">浏览职位</Link></div>}</>}
+    {section === 'profile' && <><div className="dashboard-title"><p>PROFILE</p><h1>个人资料</h1><span>资料可在投递时由简历解析结果更新。</span></div><form className="profile-form" onSubmit={saveProfile}><fieldset><legend>基本信息</legend><label><span>姓名</span><input name="name" defaultValue={candidate.name} /></label><label><span>手机号</span><input name="phone" defaultValue={candidate.phone} /></label><label><span>邮箱</span><input name="email" defaultValue={candidate.email} /></label><label><span>性别</span><select name="gender" defaultValue={candidate.gender}><option value="">请选择</option><option>男</option><option>女</option><option>其他 / 不便透露</option></select></label><label><span>出生年月</span><input name="birth_date" type="month" defaultValue={candidate.birth_date} /></label></fieldset><fieldset><legend>教育与意向</legend><label><span>学校</span><input name="school" defaultValue={candidate.school} /></label><label><span>学历</span><input name="degree" defaultValue={candidate.highest_degree} /></label><label><span>专业</span><input name="major" defaultValue={candidate.major} /></label><label><span>毕业时间</span><input name="graduation_date" type="month" defaultValue={candidate.graduation_date} /></label><label><span>意向城市</span><select name="preferred_city" defaultValue={candidate.preferred_city}><option value="">请选择</option><option>宁波</option><option>上海</option><option>杭州</option><option>其他</option></select></label></fieldset>{saved && <p className="form-success">个人资料已保存至本机 Mock 状态。</p>}<button className="button button-primary" type="submit">保存资料</button></form></>}
+    {section === 'account' && <><div className="dashboard-title"><p>ACCOUNT</p><h1>账号设置</h1></div><div className="account-panel"><div><small>当前登录方式</small><strong>手机号 / 邮箱 + Mock 验证码</strong><p>未保存密码。正式认证将由企业 Auth API 或合规认证服务提供。</p></div><button className="button button-outline" onClick={() => { mockLogout(); router.push('/auth'); }}>退出登录</button></div></>}
+  </section></div>;
+}
