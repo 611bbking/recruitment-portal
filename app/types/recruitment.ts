@@ -1,6 +1,10 @@
 export type RecruitmentType = '校园招聘' | '社会招聘' | '招聘项目';
 export type JobStatus = 'draft' | 'open' | 'paused' | 'closed';
-export type ApplicationStage = 'new' | 'screening' | 'first_interview' | 'second_interview' | 'offer' | 'pre_onboarding' | 'onboarded' | 'rejected' | 'withdrawn';
+export type ApplicationStage = 'new' | 'screening' | 'first_interview' | 'second_interview' | 'interview_passed' | 'offer_pending' | 'offer' | 'pre_onboarding' | 'onboarded' | 'rejected' | 'withdrawn';
+export type SchoolLevel = '985' | '211' | '双一流' | '海外高校' | '其他本科' | '其他';
+export type MajorCategory = '金融/经济' | '化工' | '数学/统计' | '计算机' | '工程' | '语言' | '管理' | '其他';
+export type CandidateSource = '官网' | '校园宣讲' | '内推' | '招聘平台' | '招聘项目' | '其他';
+export type RecruitmentChannel = 'campus' | 'social' | 'project';
 
 export type Job = {
   job_id: string;
@@ -59,9 +63,12 @@ export type Candidate = {
   gender: string;
   birth_date: string;
   school: string;
+  school_level: SchoolLevel;
   highest_degree: string;
   major: string;
+  major_category: MajorCategory;
   graduation_date: string;
+  graduation_year: string;
   preferred_city: string;
   resume_id: string | null;
   created_at: string;
@@ -84,10 +91,17 @@ export type Application = {
   candidate_id: string;
   job_id: string;
   project_id: string | null;
+  recruitment_type: RecruitmentChannel;
   status: ApplicationStage;
   owner_id: string;
   owner_name: string;
   rejection_reason: string | null;
+  rejection_note: string | null;
+  rejected_at: string | null;
+  rejected_by: string | null;
+  source: CandidateSource;
+  is_deleted: boolean;
+  deleted_at: string | null;
   applied_at: string;
   created_at: string;
   updated_at: string;
@@ -112,7 +126,7 @@ export type Interview = {
 export type ApplicationActivity = {
   activity_id: string;
   application_id: string;
-  activity_type: 'application_created' | 'stage_changed' | 'interview_scheduled' | 'interview_updated' | 'note_added';
+  activity_type: 'application_created' | 'stage_changed' | 'interview_scheduled' | 'interview_updated' | 'note_added' | 'application_deleted' | 'application_restored';
   description: string;
   operator: string;
   created_at: string;

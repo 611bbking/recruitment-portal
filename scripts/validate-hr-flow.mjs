@@ -5,6 +5,7 @@ globalThis.window = {};
 globalThis.localStorage = { getItem: (key) => memory.get(key) ?? null, setItem: (key, value) => memory.set(key, value), removeItem: (key) => memory.delete(key) };
 
 const hr = await import('../app/lib/hr-store.ts');
+const analytics = await import('../app/lib/recruitment-analytics.ts');
 hr.mockHrLogin('hr-zhang');
 assert.equal(hr.getMockHrUser().role, 'hr');
 
@@ -33,4 +34,26 @@ assert(hr.getCandidateNotes('A-HR-001').some((item) => item.content.includes('�
 assert(hr.getActivities('A-HR-001').some((item) => item.activity_type === 'interview_scheduled'));
 assert(hr.getActivities('A-HR-001').filter((item) => item.activity_type === 'stage_changed').length >= 3);
 
-console.log('HR flow validation passed: screening -> first interview -> invite payload -> second interview, with timeline and notes.');
+hr.bulkUpdateApplicationStage(['A-HR-011'], 'screening');
+assert.equal(hr.getApplicationById('A-HR-011').status, 'screening');
+
+hr.bulkRejectApplications(['A-HR-011'], '专业/背景不匹配', 'Mock 批量淘汰验收');
+const rejected = hr.getApplicationById('A-HR-011');
+assert.equal(rejected.status, 'rejected');
+assert.equal(rejected.rejection_note, 'Mock 批量淘汰验收');
+assert.ok(rejected.rejected_at);
+
+hr.softDeleteApplications(['A-HR-010']);
+assert.equal(hr.getApplicationById('A-HR-010').is_deleted, true);
+
+const applications = analytics.filterRecruitmentApplications(hr.getHrApplications(), { recruitmentType: '', jobId: '' });
+const stats = analytics.getRecruitmentStats(applications, hr.getHrInterviews());
+const funnel = analytics.getRecruitmentFunnel(applications);
+const jobs = analytics.getJobStats(applications, hr.getManagedJobs());
+const profile = analytics.getCandidateProfileStats(applications, hr.getHrCandidates());
+assert.equal(stats.received, applications.length);
+assert.equal(funnel[0].count, applications.length);
+assert(jobs.some((item) => item.jobId === 'researcher' && item.received > 0));
+assert(profile.total > 0);
+
+console.log('HR flow validation passed: individual flow, bulk actions, soft delete and dynamic analytics.');

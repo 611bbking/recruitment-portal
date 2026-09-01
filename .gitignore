@@ -21,6 +21,7 @@
 Thumbs.db
 *.pem
 *.log
+*.tsbuildinfo
 
 # debug
 npm-debug.log*
